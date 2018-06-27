@@ -2,7 +2,7 @@ package com.smartgnan.widgets;
 
 import android.graphics.Canvas;
 
-public class ArrowHeadWidget implements BaseWidget {
+public class ArrowHeadWidget extends BaseWidget {
     @Override
     public void RenderWidget(Canvas canvas) {
 

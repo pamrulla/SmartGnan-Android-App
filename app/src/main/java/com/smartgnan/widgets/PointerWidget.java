@@ -2,7 +2,7 @@ package com.smartgnan.widgets;
 
 import android.graphics.Canvas;
 
-public class PointerWidget implements BaseWidget {
+public class PointerWidget extends BaseWidget {
     @Override
     public void RenderWidget(Canvas canvas) {
 

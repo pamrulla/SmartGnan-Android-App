@@ -19,7 +19,7 @@ public abstract class BaseAlgorithm {
     ArrayList<BaseWidget> Nodes;
     int screenWidth, screenHeight, halfHeight;
     final int padding = 5;
-    final int topPadding = 20;
+    final int topPadding = 5;
 
     public BaseAlgorithm(String title, int w, int h) {
         Title = title;
@@ -63,5 +63,5 @@ public abstract class BaseAlgorithm {
         }
     }
 
-
+    public abstract void InsertState(String info);
 }

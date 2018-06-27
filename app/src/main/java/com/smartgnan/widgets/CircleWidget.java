@@ -2,7 +2,7 @@ package com.smartgnan.widgets;
 
 import android.graphics.Canvas;
 
-public class CircleWidget implements BaseWidget {
+public class CircleWidget extends BaseWidget {
     @Override
     public void RenderWidget(Canvas canvas) {
 

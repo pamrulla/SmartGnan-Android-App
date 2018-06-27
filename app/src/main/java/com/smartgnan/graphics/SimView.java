@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.smartgnan.algorithms.BaseAlgorithm;
+import com.smartgnan.helpers.Helper;
 import com.smartgnan.smartalgo.R;
 import com.smartgnan.smartalgo.SimActivity;
 import com.smartgnan.widgets.BaseWidget;
@@ -25,16 +27,23 @@ public class SimView extends View {
     BaseAlgorithm Algorithm;
     Paint paint;
     boolean isAnimating = false;
+    int currentIndex;
+    int screenWidth, screenHeight, halfHeight;
 
     public SimView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
         paint = new Paint();
+        currentIndex = 0;
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+        screenWidth = w;
+        screenHeight = h;
+        halfHeight = h / 2;
+
         ((SimActivity)getContext()).AfterGotSize(w, h);
     }
 
@@ -42,28 +51,21 @@ public class SimView extends View {
         this.Algorithm = alg;
     }
 
-    public void UpdateAnimation() {
+    public void UpdateAnimation(int index) {
         isAnimating = true;
-        for (BaseWidget w : this.Algorithm.getStates().get(1).Nodes) {
+        currentIndex = index;
+        for (BaseWidget w : this.Algorithm.getStates().get(currentIndex).Nodes) {
             w.Animate();
         }
+
+        invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //canvas.drawColor(Color.WHITE);
-        if(isAnimating) {
-            for (BaseWidget w : this.Algorithm.getStates().get(1).Nodes) {
-                w.RenderWidget(canvas);
-            }
+        for (BaseWidget w : this.Algorithm.getStates().get(currentIndex).Nodes) {
+            w.RenderWidget(canvas);
         }
-        else {
-            for (BaseWidget w : this.Algorithm.getStates().get(0).Nodes) {
-                w.RenderWidget(canvas);
-            }
-        }
-
-        invalidate();
     }
 }

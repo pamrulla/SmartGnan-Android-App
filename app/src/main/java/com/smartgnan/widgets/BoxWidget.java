@@ -10,7 +10,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.smartgnan.helpers.Helper;
 
-public class BoxWidget implements BaseWidget {
+public class BoxWidget extends BaseWidget {
     public float x;
     public float y;
     float width;
@@ -18,9 +18,6 @@ public class BoxWidget implements BaseWidget {
     String text;
     float old_x;
     float old_y;
-    public int color = Color.RED;
-    public boolean isUpdated = false;
-
 
     public BoxWidget() {
 
@@ -34,7 +31,8 @@ public class BoxWidget implements BaseWidget {
         this.text = copy.text;
         this.old_x = copy.old_x;
         this.old_y = copy.old_y;
-        this.isUpdated = false;
+        this.isUpdated = copy.isUpdated;
+        this.color = copy.color;
     }
 
     public void SetBounds(float x, float y, float width, float height) {

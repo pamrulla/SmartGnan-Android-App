@@ -2,7 +2,7 @@ package com.smartgnan.widgets;
 
 import android.graphics.Canvas;
 
-public class LineWidget implements BaseWidget {
+public class LineWidget extends BaseWidget {
     @Override
     public void RenderWidget(Canvas canvas) {
 

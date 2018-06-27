@@ -3,7 +3,12 @@ package com.smartgnan.widgets;
 import android.graphics.Canvas;
 import android.graphics.Color;
 
-public interface BaseWidget {
-    public void RenderWidget(Canvas canvas);
-    public void Animate();
+import com.smartgnan.helpers.Helper;
+
+public abstract class BaseWidget {
+    public int color = Helper.ColorOrange;
+    public boolean isUpdated = false;
+
+    public abstract void RenderWidget(Canvas canvas);
+    public abstract void Animate();
 }

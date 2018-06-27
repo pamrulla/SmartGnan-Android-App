@@ -1,15 +1,20 @@
 package com.smartgnan.algorithms;
 
+import android.content.ContentProviderOperation;
 import android.os.Debug;
 import android.util.Log;
 
 import com.smartgnan.graphics.State;
+import com.smartgnan.helpers.Helper;
 import com.smartgnan.widgets.BaseWidget;
 import com.smartgnan.widgets.BoxWidget;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class BubbleSort extends BaseAlgorithm {
+
+    ArrayList<Integer> dataSet;
 
     public BubbleSort(int w, int h) {
         super("Bubble Sort", w, h);
@@ -17,7 +22,7 @@ public class BubbleSort extends BaseAlgorithm {
 
     @Override
     public void Init() {
-        ArrayList<Integer> dataSet = new ArrayList<Integer>() {{
+        dataSet = new ArrayList<Integer>() {{
             add(8);
             add(1);
             add(3);
@@ -30,9 +35,7 @@ public class BubbleSort extends BaseAlgorithm {
 
         this.CreateNodesForBarGraph(dataSet);
 
-        State s = new State(this.Nodes);
-        s.info = "Initial State";
-        this.States.add(s);
+        this.InsertState("Initial State");
     }
 
     @Override
@@ -42,30 +45,99 @@ public class BubbleSort extends BaseAlgorithm {
 
     @Override
     public void Process() {
-        ArrayList<BaseWidget> newNodes = new ArrayList<>();
 
-        for(int i = 0; i < this.Nodes.size(); i++)
+        ArrayList<Integer> copyDataSet = new ArrayList<>(dataSet);
+
+        boolean isSwapped = false;
+
+        int i, j;
+
+        for(i = 0; i < copyDataSet.size(); i++)
         {
-            if(i == 0) {
-                BoxWidget w1 = new BoxWidget((BoxWidget) (this.Nodes.get(i)));
-                BoxWidget w2 = new BoxWidget((BoxWidget) (this.Nodes.get(i + 1)));
-                float temp = w1.x;
-                w1.UpdateNewBounds(w2.x, w1.y);
-                w2.UpdateNewBounds(temp, w2.y);
-                newNodes.add(w1);
-                newNodes.add(w2);
-                i= 1;
+            isSwapped = false;
+
+            for(j = 0; j < copyDataSet.size() - i - 1; j++)
+            {
+                //Select Nodes for comparison
+                this.Nodes.get(j).color = Helper.ColorRed;
+                this.Nodes.get(j+1).color = Helper.ColorRed;
+                this.InsertState("Selected " + copyDataSet.get(j) + " & " + copyDataSet.get(j+1) + " for comparison.");
+
+                if(copyDataSet.get(j) > copyDataSet.get(j+1))
+                {
+                    this.InsertState("Selected " + copyDataSet.get(j) + " & " + copyDataSet.get(j+1) + " are not in order, hence need to swap.");
+
+                    //swap values
+                    Collections.swap(copyDataSet, j, j+1);
+
+                    //Swap Nodes
+                    float temp = ((BoxWidget) this.Nodes.get(j)).x;
+                    ((BoxWidget) this.Nodes.get(j)).UpdateNewBounds(((BoxWidget) this.Nodes.get(j+1)).x, ((BoxWidget) this.Nodes.get(j)).y);
+                    ((BoxWidget) this.Nodes.get(j+1)).UpdateNewBounds(temp, ((BoxWidget) this.Nodes.get(j+1)).y);
+
+                    this.InsertState("Selected " + copyDataSet.get(j) + " & " + copyDataSet.get(j+1) + " swapped.");
+                    Collections.swap(this.Nodes, j , j+1);
+
+                    this.Nodes.get(j).color = Helper.ColorOrange;
+                    this.Nodes.get(j+1).color = Helper.ColorOrange;
+
+                    this.Nodes.get(j).isUpdated = false;
+                    this.Nodes.get(j+1).isUpdated = false;
+
+                    this.InsertState("Selected " + copyDataSet.get(j) + " & " + copyDataSet.get(j+1) + " swapped.");
+
+                    isSwapped = true;
+
+                }
+                else
+                {
+                    //Deselect nodes
+                   this.Nodes.get(j).isUpdated = false;
+                    this.Nodes.get(j+1).isUpdated = false;
+                    this.InsertState("Selected " + copyDataSet.get(j) + " & " + copyDataSet.get(j+1) + " are in order, hence no need to swap.");
+
+                    this.Nodes.get(j).color = Helper.ColorOrange;
+                    this.Nodes.get(j+1).color = Helper.ColorOrange;
+
+                    this.Nodes.get(j).isUpdated = false;
+                    this.Nodes.get(j+1).isUpdated = false;
+
+                    this.InsertState("Selected " + copyDataSet.get(j) + " & " + copyDataSet.get(j+1) + " are in order, hence no need to swap.");
+                }
+            }
+
+            if(!isSwapped)
+            {
+                //Update state for no swapping done
+                this.InsertState("No swapping done in single iteration, hence elements are sorted");
+                break;
             }
             else
             {
-                BoxWidget w1 = new BoxWidget((BoxWidget) (this.Nodes.get(i)));
-                newNodes.add(w1);
+                this.Nodes.get(j).color = Helper.ColorGreen;
+                this.InsertState("The element " + copyDataSet.get(j) + " is sorted");
             }
         }
 
-        State s = new State(newNodes);
-        s.info = "Second State";
-        this.States.add(s);
+        //Final state of the nodes
+        for(int k = 0; k < this.Nodes.size(); k++)
+        {
+            this.Nodes.get(k).color = Helper.ColorGreen;
+        }
+        this.InsertState("Sorted elements");
 
+    }
+
+    @Override
+    public void InsertState(String info) {
+        ArrayList<BaseWidget> copyNodes = new ArrayList<>();
+
+        for(int i = 0; i < this.Nodes.size(); i++) {
+            copyNodes.add(new BoxWidget(((BoxWidget) this.Nodes.get(i))));
+        }
+
+        State s = new State(copyNodes);
+        s.info = info;
+        this.States.add(s);
     }
 }
