@@ -14,11 +14,13 @@ public abstract class BaseAlgorithm {
     String Title;
     String Info;
     String Options;
-    ArrayList<State> States;
-    ArrayList<String> Background;
-    ArrayList<BaseWidget> Nodes;
-    int screenWidth, screenHeight, halfHeight;
-    final int padding = 5;
+    public ArrayList<State> States;
+    public ArrayList<BaseWidget> Background;
+    public ArrayList<BaseWidget> Nodes;
+    protected int screenWidth;
+    int screenHeight;
+    protected int halfHeight;
+    protected final int padding = 5;
     final int topPadding = 5;
 
     public BaseAlgorithm(String title, int w, int h) {
@@ -27,7 +29,7 @@ public abstract class BaseAlgorithm {
         screenHeight = h;
         halfHeight = h / 2;
         this.States = new ArrayList<State>();
-        this.Background = new ArrayList<String>();
+        this.Background = new ArrayList<BaseWidget>();
         this.Nodes = new ArrayList<>();
         Init();
     }

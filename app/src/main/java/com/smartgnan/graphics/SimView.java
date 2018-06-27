@@ -64,8 +64,13 @@ public class SimView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        for (BaseWidget w : this.Algorithm.getStates().get(currentIndex).Nodes) {
+        for(BaseWidget w : this.Algorithm.Background) {
             w.RenderWidget(canvas);
+        }
+        if(this.Algorithm.States.size() > 0) {
+            for (BaseWidget w : this.Algorithm.getStates().get(currentIndex).Nodes) {
+                w.RenderWidget(canvas);
+            }
         }
     }
 }

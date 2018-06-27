@@ -1,8 +1,6 @@
 package com.smartgnan.smartalgo;
 
 import android.animation.ValueAnimator;
-import android.graphics.Rect;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,14 +8,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.smartgnan.algorithms.BaseAlgorithm;
-import com.smartgnan.algorithms.BubbleSort;
+import com.smartgnan.algorithms.Sort.BubbleSort;
+import com.smartgnan.algorithms.Stack.Stack;
 import com.smartgnan.graphics.SimView;
-
-import org.w3c.dom.Text;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 
 public class SimActivity extends AppCompatActivity {
 
@@ -62,7 +58,7 @@ public class SimActivity extends AppCompatActivity {
     }
 
     public void AfterGotSize(int w, int h) {
-        type = BubbleSort.class;
+        type = Stack.class;
         try {
             try {
                 Constructor cns = type.getConstructor(new Class[] { int.class, int.class});
@@ -84,6 +80,8 @@ public class SimActivity extends AppCompatActivity {
         viewSim.SetAlgorithmReference(this.Algorithm);
 
         Algorithm.Process();
-        stateText.setText(Algorithm.getStates().get(currentIndex).info);
+        if(Algorithm.States.size() > 0) {
+            stateText.setText(Algorithm.getStates().get(currentIndex).info);
+        }
     }
 }

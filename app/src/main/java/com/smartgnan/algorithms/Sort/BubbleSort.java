@@ -1,9 +1,10 @@
-package com.smartgnan.algorithms;
+package com.smartgnan.algorithms.Sort;
 
 import android.content.ContentProviderOperation;
 import android.os.Debug;
 import android.util.Log;
 
+import com.smartgnan.algorithms.BaseAlgorithm;
 import com.smartgnan.graphics.State;
 import com.smartgnan.helpers.Helper;
 import com.smartgnan.widgets.BaseWidget;
