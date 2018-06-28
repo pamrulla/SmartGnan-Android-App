@@ -40,21 +40,40 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <Button
-            android:id="@+id/button4"
-            style="@style/Widget.AppCompat.Button.Borderless"
+        <ImageButton
+            android:id="@+id/actionSheetButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Button" />
+            android:layout_weight="0.1"
+            app:srcCompat="@drawable/action_sheet_button"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            />
 
-        <Button
-            android:id="@+id/start"
-            style="@style/Widget.AppCompat.Button.Borderless"
+        <ImageButton
+            android:id="@+id/prevButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Button" />
+            android:layout_weight="0.3"
+            app:srcCompat="@drawable/prev_button"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            />
+
+        <ImageButton
+            android:id="@+id/playButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            app:srcCompat="@drawable/play_button"
+            style="@style/Widget.AppCompat.Button.Borderless" />
+
+        <ImageButton
+            android:id="@+id/nextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            app:srcCompat="@drawable/next_button"
+            style="@style/Widget.AppCompat.Button.Borderless" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -1,12 +1,17 @@
 package com.smartgnan.smartalgo;
 
 import android.animation.ValueAnimator;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.baoyz.actionsheet.ActionSheet;
 import com.smartgnan.algorithms.BaseAlgorithm;
 import com.smartgnan.algorithms.Sort.BubbleSort;
 import com.smartgnan.algorithms.Stack.Stack;
@@ -17,13 +22,15 @@ import java.lang.reflect.InvocationTargetException;
 
 public class SimActivity extends AppCompatActivity {
 
-    BaseAlgorithm Algorithm;
+    BaseAlgorithm Algorithm = null;
     Class<? extends BaseAlgorithm> type;
     SimView viewSim;
 
     int currentIndex;
+    boolean isPlay = true;
 
     TextView stateText;
+    ValueAnimator animator = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,31 +41,128 @@ public class SimActivity extends AppCompatActivity {
 
         stateText = (TextView)findViewById(R.id.stateInfo);
 
-        final Button startButton = (Button)findViewById(R.id.start);
-        startButton.setOnClickListener(new View.OnClickListener() {
+        final ImageButton actionSheetButton = (ImageButton)findViewById(R.id.actionSheetButton);
+        actionSheetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ValueAnimator animator = ValueAnimator.ofInt(currentIndex+1, Algorithm.getStates().size()-1);
-                animator.setDuration(1000 * Algorithm.getStates().size());
-                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        int idx = (int)valueAnimator.getAnimatedValue();
-                        currentIndex = idx;
-                        viewSim.UpdateAnimation(idx);
-                        stateText.setText(Algorithm.getStates().get(idx).info);
-                        if((idx + 1) == Algorithm.getStates().size()) {
-                            startButton.setEnabled(false);
-                        }
+                ActionSheet.createBuilder(view.getContext(), getSupportFragmentManager())
+                        .setCancelButtonTitle("Cancel")
+                        .setOtherButtonTitles("Item1", "Item2", "Item3", "Item4")
+                        .setCancelableOnTouchOutside(true)
+                        .setListener(new ActionSheet.ActionSheetListener() {
+                            @Override
+                            public void onDismiss(ActionSheet actionSheet, boolean isCancel) {
+
+                            }
+
+                            @Override
+                            public void onOtherButtonClick(ActionSheet actionSheet, int index) {
+                                openDialogBox();
+                            }
+                        }).show();
+            }
+        });
+
+        final ImageButton prevButton = (ImageButton)findViewById(R.id.prevButton);
+        prevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(Algorithm == null || Algorithm.States.size() <= 0 ) {
+                    return;
+                }
+                animator.end();
+                --currentIndex;
+                if(currentIndex < 0) {
+                    currentIndex = 0;
+                    return;
+                }
+                viewSim.UpdateAnimation(currentIndex);
+                stateText.setText(Algorithm.getStates().get(currentIndex).info);
+            }
+        });
+
+        final ImageButton playButton = (ImageButton)findViewById(R.id.playButton);
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isPlay) {
+                    if(animator.isPaused()) {
+                        animator.resume();
                     }
-                });
-                animator.start();
+                    else {
+                        animator.start();
+                    }
+                }
+                else {
+                    animator.pause();
+                }
+                isPlay = !isPlay;
+                if(isPlay) {
+                    playButton.setImageResource(R.drawable.play_button);
+                }
+                else {
+                    playButton.setImageResource(R.drawable.pause_button);
+                }
+            }
+        });
+
+        final ImageButton nextButton = (ImageButton)findViewById(R.id.nextButton);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(Algorithm == null || Algorithm.States.size() <= 0 ) {
+                    return;
+                }
+                animator.end();
+                ++currentIndex;
+                if(currentIndex >= Algorithm.States.size()) {
+                    currentIndex = Algorithm.States.size() - 1;
+                    return;
+                }
+                viewSim.UpdateAnimation(currentIndex);
+                stateText.setText(Algorithm.getStates().get(currentIndex).info);
+            }
+        });
+    }
+
+    private void openDialogBox() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Input values");
+
+        LayoutInflater inflater = getLayoutInflater();
+        View customView = inflater.inflate(R.layout.input_values, null);
+
+        builder.setView(customView);
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
+        ((EditText)customView.findViewById(R.id.v2)).setNextFocusForwardId(R.id.v3);
+        ((EditText)customView.findViewById(R.id.v3)).setNextFocusForwardId(R.id.v4);
+        ((EditText)customView.findViewById(R.id.v4)).setNextFocusForwardId(R.id.v5);
+        ((EditText)customView.findViewById(R.id.v5)).setNextFocusForwardId(R.id.v6);
+        ((EditText)customView.findViewById(R.id.v6)).setNextFocusForwardId(R.id.v7);
+        ((EditText)customView.findViewById(R.id.v7)).setNextFocusForwardId(R.id.v8);
+
+        Button cancelButton = (Button)customView.findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.cancel();
+            }
+        });
+
+        Button submitButton = (Button)customView.findViewById(R.id.submitButton);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.cancel();
             }
         });
     }
 
     public void AfterGotSize(int w, int h) {
-        type = Stack.class;
+        type = BubbleSort.class;
         try {
             try {
                 Constructor cns = type.getConstructor(new Class[] { int.class, int.class});
@@ -80,8 +184,23 @@ public class SimActivity extends AppCompatActivity {
         viewSim.SetAlgorithmReference(this.Algorithm);
 
         Algorithm.Process();
+        PrepareAnimator();
         if(Algorithm.States.size() > 0) {
             stateText.setText(Algorithm.getStates().get(currentIndex).info);
         }
+    }
+
+    private void PrepareAnimator() {
+        animator = ValueAnimator.ofInt(currentIndex+1, Algorithm.getStates().size()-1);
+        animator.setDuration(1000 * Algorithm.getStates().size());
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                int idx = (int)valueAnimator.getAnimatedValue();
+                currentIndex = idx;
+                viewSim.UpdateAnimation(idx);
+                stateText.setText(Algorithm.getStates().get(idx).info);
+            }
+        });
     }
 }
