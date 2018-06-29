@@ -1,6 +1,7 @@
 package com.smartgnan.algorithms;
 
 import com.smartgnan.graphics.State;
+import com.smartgnan.helpers.Options;
 import com.smartgnan.widgets.BaseWidget;
 import com.smartgnan.widgets.BoxWidget;
 
@@ -13,7 +14,7 @@ import static java.lang.Math.abs;
 public abstract class BaseAlgorithm {
     String Title;
     String Info;
-    String Options;
+    public ArrayList<Options> options;
     public ArrayList<State> States;
     public ArrayList<BaseWidget> Background;
     public ArrayList<BaseWidget> Nodes;
@@ -31,12 +32,16 @@ public abstract class BaseAlgorithm {
         this.States = new ArrayList<State>();
         this.Background = new ArrayList<BaseWidget>();
         this.Nodes = new ArrayList<>();
+        this.options = new ArrayList<>();
         Init();
+        UpdateOptions();
     }
+
+    protected abstract void UpdateOptions();
 
     public abstract void Init();
 
-    public abstract void ProcessOptions();
+    public abstract void ProcessOptions(int index);
 
     public abstract void Process();
 

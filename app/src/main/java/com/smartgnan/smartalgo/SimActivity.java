@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -13,12 +14,18 @@ import android.widget.TextView;
 
 import com.baoyz.actionsheet.ActionSheet;
 import com.smartgnan.algorithms.BaseAlgorithm;
+import com.smartgnan.algorithms.Queue.Queue_sg;
 import com.smartgnan.algorithms.Sort.BubbleSort;
 import com.smartgnan.algorithms.Stack.Stack;
 import com.smartgnan.graphics.SimView;
+import com.smartgnan.helpers.OptionType;
+import com.smartgnan.helpers.Options;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.function.ToIntFunction;
 
 public class SimActivity extends AppCompatActivity {
 
@@ -45,9 +52,17 @@ public class SimActivity extends AppCompatActivity {
         actionSheetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(Algorithm == null) {
+                    return;
+                }
+
+                ArrayList<String> titles = new ArrayList<>();
+                for(Options o : Algorithm.options) {
+                    titles.add(o.text);
+                }
                 ActionSheet.createBuilder(view.getContext(), getSupportFragmentManager())
                         .setCancelButtonTitle("Cancel")
-                        .setOtherButtonTitles("Item1", "Item2", "Item3", "Item4")
+                        .setOtherButtonTitles(titles.toArray(new String[0]))
                         .setCancelableOnTouchOutside(true)
                         .setListener(new ActionSheet.ActionSheetListener() {
                             @Override
@@ -57,7 +72,7 @@ public class SimActivity extends AppCompatActivity {
 
                             @Override
                             public void onOtherButtonClick(ActionSheet actionSheet, int index) {
-                                openDialogBox();
+                                ProcessSelectedOption(index);
                             }
                         }).show();
             }
@@ -113,7 +128,7 @@ public class SimActivity extends AppCompatActivity {
                 if(Algorithm == null || Algorithm.States.size() <= 0 ) {
                     return;
                 }
-                animator.end();
+                animator.cancel();
                 ++currentIndex;
                 if(currentIndex >= Algorithm.States.size()) {
                     currentIndex = Algorithm.States.size() - 1;
@@ -125,7 +140,19 @@ public class SimActivity extends AppCompatActivity {
         });
     }
 
-    private void openDialogBox() {
+    private void ProcessSelectedOption(int index) {
+        if(Algorithm.options.get(index).type == OptionType.Input_Event)
+        {
+            openDialogBox(index);
+        }
+        else
+        {
+            Algorithm.ProcessOptions(index);
+            AfterProcess();
+        }
+    }
+
+    private void openDialogBox(final int index) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Input values");
 
@@ -134,15 +161,25 @@ public class SimActivity extends AppCompatActivity {
 
         builder.setView(customView);
 
+        final EditText v1 = (EditText)customView.findViewById(R.id.v1);
+        final EditText v2 = (EditText)customView.findViewById(R.id.v2);
+        final EditText v3 = (EditText)customView.findViewById(R.id.v3);
+        final EditText v4 = (EditText)customView.findViewById(R.id.v4);
+        final EditText v5 = (EditText)customView.findViewById(R.id.v5);
+        final EditText v6 = (EditText)customView.findViewById(R.id.v6);
+        final EditText v7 = (EditText)customView.findViewById(R.id.v7);
+        final EditText v8 = (EditText)customView.findViewById(R.id.v8);
+
+        v1.setNextFocusForwardId(R.id.v2);
+        v2.setNextFocusForwardId(R.id.v3);
+        v3.setNextFocusForwardId(R.id.v4);
+        v4.setNextFocusForwardId(R.id.v5);
+        v5.setNextFocusForwardId(R.id.v6);
+        v6.setNextFocusForwardId(R.id.v7);
+        v7.setNextFocusForwardId(R.id.v8);
+
         final AlertDialog dialog = builder.create();
         dialog.show();
-
-        ((EditText)customView.findViewById(R.id.v2)).setNextFocusForwardId(R.id.v3);
-        ((EditText)customView.findViewById(R.id.v3)).setNextFocusForwardId(R.id.v4);
-        ((EditText)customView.findViewById(R.id.v4)).setNextFocusForwardId(R.id.v5);
-        ((EditText)customView.findViewById(R.id.v5)).setNextFocusForwardId(R.id.v6);
-        ((EditText)customView.findViewById(R.id.v6)).setNextFocusForwardId(R.id.v7);
-        ((EditText)customView.findViewById(R.id.v7)).setNextFocusForwardId(R.id.v8);
 
         Button cancelButton = (Button)customView.findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -156,13 +193,40 @@ public class SimActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Algorithm.options.get(index).inputs.clear();
+                if(v1.getText().toString().length() > 0) {
+                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v1.getText().toString()));
+                }
+                if(v2.getText().toString().length() > 0) {
+                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v2.getText().toString()));
+                }
+                if(v3.getText().toString().length() > 0) {
+                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v3.getText().toString()));
+                }
+                if(v4.getText().toString().length() > 0) {
+                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v4.getText().toString()));
+                }
+                if(v5.getText().toString().length() > 0) {
+                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v5.getText().toString()));
+                }
+                if(v6.getText().toString().length() > 0) {
+                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v6.getText().toString()));
+                }
+                if(v7.getText().toString().length() > 0) {
+                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v7.getText().toString()));
+                }
+                if(v8.getText().toString().length() > 0) {
+                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v8.getText().toString()));
+                }
                 dialog.cancel();
+                Algorithm.ProcessOptions(index);
+                AfterProcess();
             }
         });
     }
 
     public void AfterGotSize(int w, int h) {
-        type = BubbleSort.class;
+        type = Queue_sg.class;
         try {
             try {
                 Constructor cns = type.getConstructor(new Class[] { int.class, int.class});
@@ -184,6 +248,12 @@ public class SimActivity extends AppCompatActivity {
         viewSim.SetAlgorithmReference(this.Algorithm);
 
         Algorithm.Process();
+        AfterProcess();
+    }
+
+    private void AfterProcess() {
+        currentIndex = 0;
+        viewSim.SetCurrentIndex(currentIndex);
         PrepareAnimator();
         if(Algorithm.States.size() > 0) {
             stateText.setText(Algorithm.getStates().get(currentIndex).info);
@@ -191,12 +261,20 @@ public class SimActivity extends AppCompatActivity {
     }
 
     private void PrepareAnimator() {
-        animator = ValueAnimator.ofInt(currentIndex+1, Algorithm.getStates().size()-1);
-        animator.setDuration(1000 * Algorithm.getStates().size());
+        if(animator != null) {
+            animator.removeAllUpdateListeners();
+            animator.setIntValues(currentIndex+1, Algorithm.getStates().size()-1);
+            animator.setDuration(1000 * Algorithm.getStates().size());
+        }
+        else {
+            animator = ValueAnimator.ofInt(currentIndex+1, Algorithm.getStates().size()-1);
+            animator.setDuration(1000 * Algorithm.getStates().size());
+        }
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 int idx = (int)valueAnimator.getAnimatedValue();
+                Log.i("Khan", "" +idx);
                 currentIndex = idx;
                 viewSim.UpdateAnimation(idx);
                 stateText.setText(Algorithm.getStates().get(idx).info);

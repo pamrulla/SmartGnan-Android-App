@@ -15,7 +15,7 @@ public class BoxWidget extends BaseWidget {
     public float y;
     float width;
     float height;
-    String text;
+    public String text;
     float old_x;
     float old_y;
 

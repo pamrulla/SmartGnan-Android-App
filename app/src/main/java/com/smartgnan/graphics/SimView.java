@@ -73,4 +73,8 @@ public class SimView extends View {
             }
         }
     }
+
+    public void SetCurrentIndex(int currentIndex) {
+        this.currentIndex = currentIndex;
+    }
 }

@@ -7,6 +7,8 @@ import android.util.Log;
 import com.smartgnan.algorithms.BaseAlgorithm;
 import com.smartgnan.graphics.State;
 import com.smartgnan.helpers.Helper;
+import com.smartgnan.helpers.OptionType;
+import com.smartgnan.helpers.Options;
 import com.smartgnan.widgets.BaseWidget;
 import com.smartgnan.widgets.BoxWidget;
 
@@ -19,6 +21,11 @@ public class BubbleSort extends BaseAlgorithm {
 
     public BubbleSort(int w, int h) {
         super("Bubble Sort", w, h);
+    }
+
+    @Override
+    protected void UpdateOptions() {
+        this.options.add(new Options("Create", OptionType.Input_Event));
     }
 
     @Override
@@ -40,8 +47,17 @@ public class BubbleSort extends BaseAlgorithm {
     }
 
     @Override
-    public void ProcessOptions() {
+    public void ProcessOptions(int index) {
+        if(index == 0) {
+            dataSet.clear();
+            Nodes.clear();
+            States.clear();
 
+            dataSet.addAll(options.get(index).inputs);
+            this.CreateNodesForBarGraph(dataSet);
+            this.InsertState("Initial State");
+            Process();
+        }
     }
 
     @Override

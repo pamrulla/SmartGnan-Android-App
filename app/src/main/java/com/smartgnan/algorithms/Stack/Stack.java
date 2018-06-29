@@ -1,15 +1,28 @@
 package com.smartgnan.algorithms.Stack;
 
+import android.graphics.Color;
 import android.graphics.Point;
 
 import com.smartgnan.algorithms.BaseAlgorithm;
+import com.smartgnan.graphics.State;
+import com.smartgnan.helpers.Helper;
+import com.smartgnan.helpers.OptionType;
+import com.smartgnan.helpers.Options;
+import com.smartgnan.widgets.BaseWidget;
+import com.smartgnan.widgets.BoxWidget;
 import com.smartgnan.widgets.PathWidget;
+
+import java.util.ArrayList;
 
 public class Stack extends BaseAlgorithm {
 
     int nodeWidth;
     int nodeHeight;
+    int startX;
+    int startY;
     int maxCount = 8;
+
+    ArrayList<Integer> dataset;
 
     public Stack(int w, int h) {
         super("Stack", w, h);
@@ -17,10 +30,21 @@ public class Stack extends BaseAlgorithm {
     }
 
     @Override
+    protected void UpdateOptions() {
+        options.add(new Options("Push", OptionType.Input_Event));
+        options.add(new Options("Pop", OptionType.Event));
+        options.add(new Options("Top/Peek", OptionType.Event));
+        options.add(new Options("IsEmpty", OptionType.Event));
+    }
+
+    @Override
     public void Init() {
+        dataset = new ArrayList<>();
+
         maxCount = 5;
         int screenCenter = super.screenWidth / 4;
-
+        startX = (screenWidth/2) - (screenCenter/2) + padding;
+        startY = padding;
         nodeWidth = screenCenter - super.padding - padding;
         nodeHeight = (halfHeight / (maxCount+2)) - padding;
 
@@ -32,11 +56,108 @@ public class Stack extends BaseAlgorithm {
 
         this.Background.add(stackContainer);
 
+        InsertState("Initial Position");
     }
 
     @Override
-    public void ProcessOptions() {
+    public void ProcessOptions(int index) {
+        switch (index) {
+            case 0: //Push
+                Push(options.get(index).inputs.get(0));
+                break;
+            case 1: //Pop
+                Pop();
+                break;
+            case 2: //Peek
+                Peek();
+                break;
+            case 3: //IsEmpty
+                IsEmpty();
+                break;
+            case 4: //Size
+                Size();
+                break;
+            default:
+                break;
+        }
+    }
 
+    private void Size() {
+        States.clear();
+        int size = Nodes.size();
+        InsertState("The size of Stack is " + size);
+    }
+    private void IsEmpty() {
+        States.clear();
+        boolean isEmpty = Nodes.size() == 0;
+        InsertState("The Stack is " + (isEmpty ? "" : "not") + " empty.");
+    }
+
+    private void Peek() {
+        States.clear();
+
+        InsertState("Checking whether Stack is empty or not");
+
+        if(Nodes.isEmpty()) {
+            IsEmpty();
+            return;
+        }
+        else
+        {
+            IsEmpty();
+        }
+
+        int idx = Nodes.size() - 1;
+        Nodes.get(idx).color = Helper.ColorRed;
+        InsertState("Selecting the top item of the Stack");
+
+        String val = ((BoxWidget) (Nodes.get(idx))).text;
+        Nodes.get(idx).color = Helper.ColorOrange;
+        InsertState("The top of the Stack is " + val);
+    }
+    private void Pop() {
+        States.clear();
+        InsertState("Checking whether Stack is empty or not");
+
+        if(Nodes.isEmpty()) {
+            IsEmpty();
+            return;
+        }
+        else
+        {
+            IsEmpty();
+        }
+
+        int idx = Nodes.size() - 1;
+        Nodes.get(idx).color = Helper.ColorRed;
+        InsertState("Selecting the top item of the Stack");
+
+        ((BoxWidget) Nodes.get(idx)).y = -nodeHeight-padding;
+        Nodes.get(idx).isUpdated = true;
+        InsertState("Removing the top item from the Stack");
+
+        Nodes.remove(idx);
+        InsertState("Final State after POP operation");
+    }
+
+    private void Push(Integer integer) {
+        States.clear();
+        InsertState("Initial State");
+        BoxWidget newNode = new BoxWidget();
+        newNode.text = integer.toString();
+        newNode.SetBounds(startX, startY, nodeWidth, nodeHeight);
+        newNode.color = Helper.ColorRed;
+        Nodes.add(newNode);
+        InsertState("New item created");
+
+        int idx = Nodes.size()-1;
+        float newY = halfHeight - ((nodeHeight-padding) * (Nodes.size() + 1));
+        ((BoxWidget) Nodes.get(idx)).UpdateNewBounds(((BoxWidget) Nodes.get(idx)).x, newY);
+        InsertState("Placing the new item at the top of the stack");
+
+        Nodes.get(idx).color = Helper.ColorOrange;
+        Nodes.get(idx).isUpdated = false;
+        InsertState("Final state after PUSH operation");
     }
 
     @Override
@@ -46,6 +167,14 @@ public class Stack extends BaseAlgorithm {
 
     @Override
     public void InsertState(String info) {
+        ArrayList<BaseWidget> copyNodes = new ArrayList<>();
 
+        for(int i = 0; i < this.Nodes.size(); i++) {
+            copyNodes.add(new BoxWidget(((BoxWidget) this.Nodes.get(i))));
+        }
+
+        State s = new State(copyNodes);
+        s.info = info;
+        this.States.add(s);
     }
 }
