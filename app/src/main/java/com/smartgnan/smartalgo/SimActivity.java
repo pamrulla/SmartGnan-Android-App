@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.baoyz.actionsheet.ActionSheet;
 import com.smartgnan.algorithms.BaseAlgorithm;
+import com.smartgnan.algorithms.LinkedLists.SingleLinkedLists;
 import com.smartgnan.algorithms.Queue.Queue_sg;
 import com.smartgnan.algorithms.Sort.BubbleSort;
 import com.smartgnan.algorithms.Stack.Stack;
@@ -226,7 +227,7 @@ public class SimActivity extends AppCompatActivity {
     }
 
     public void AfterGotSize(int w, int h) {
-        type = Queue_sg.class;
+        type = SingleLinkedLists.class;
         try {
             try {
                 Constructor cns = type.getConstructor(new Class[] { int.class, int.class});

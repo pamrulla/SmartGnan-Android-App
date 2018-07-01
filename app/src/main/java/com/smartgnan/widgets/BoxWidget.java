@@ -23,6 +23,22 @@ public class BoxWidget extends BaseWidget {
 
     }
 
+    public BoxWidget(float x, float y, float width, float height, String t) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.text = t;
+    }
+
+    public BoxWidget(float x, float y, float width, float height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.text = "";
+    }
+
     public BoxWidget(BoxWidget copy) {
         this.x = copy.x;
         this.y = copy.y;
