@@ -5,9 +5,11 @@ import android.animation.ValueAnimator;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import com.smartgnan.helpers.BoxWidgetTextLocation;
 import com.smartgnan.helpers.Helper;
 
 public class BoxWidget extends BaseWidget {
@@ -18,9 +20,10 @@ public class BoxWidget extends BaseWidget {
     public String text;
     float old_x;
     float old_y;
+    BoxWidgetTextLocation textLocation;
 
     public BoxWidget() {
-
+        textLocation = BoxWidgetTextLocation.Bottom;
     }
 
     public BoxWidget(float x, float y, float width, float height, String t) {
@@ -29,6 +32,16 @@ public class BoxWidget extends BaseWidget {
         this.width = width;
         this.height = height;
         this.text = t;
+        textLocation = BoxWidgetTextLocation.Bottom;
+    }
+
+    public BoxWidget(float x, float y, float width, float height, String t, BoxWidgetTextLocation loc) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.text = t;
+        textLocation = loc;
     }
 
     public BoxWidget(float x, float y, float width, float height) {
@@ -37,6 +50,7 @@ public class BoxWidget extends BaseWidget {
         this.width = width;
         this.height = height;
         this.text = "";
+        textLocation = BoxWidgetTextLocation.Bottom;
     }
 
     public BoxWidget(BoxWidget copy) {
@@ -49,6 +63,7 @@ public class BoxWidget extends BaseWidget {
         this.old_y = copy.old_y;
         this.isUpdated = copy.isUpdated;
         this.color = copy.color;
+        this.textLocation = copy.textLocation;
     }
 
     public void SetBounds(float x, float y, float width, float height) {
@@ -74,7 +89,18 @@ public class BoxWidget extends BaseWidget {
         paint.setColor(Color.BLACK);
         paint.setTextAlign(Paint.Align.CENTER);
         Helper.setTextSizeForWidth(canvas, paint);
-        canvas.drawText(text,  x + (width/2), y + height - 5, paint);
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+
+        if(textLocation == BoxWidgetTextLocation.Center) {
+            canvas.drawText(text, x + (width / 2), y + height / 2 + bounds.height()/2, paint);
+        }
+        else if(textLocation == BoxWidgetTextLocation.Top) {
+            canvas.drawText(text, x + (width / 2), y + 5, paint);
+        }
+        else {
+            canvas.drawText(text, x + (width / 2), y + height - 5, paint);
+        }
     }
 
     @Override

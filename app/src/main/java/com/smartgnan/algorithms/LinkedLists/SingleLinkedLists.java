@@ -1,15 +1,18 @@
 package com.smartgnan.algorithms.LinkedLists;
 
+import android.graphics.Point;
 import android.provider.ContactsContract;
 
 import com.smartgnan.algorithms.BaseAlgorithm;
 import com.smartgnan.graphics.State;
+import com.smartgnan.helpers.BoxWidgetTextLocation;
 import com.smartgnan.helpers.Helper;
 import com.smartgnan.helpers.OptionType;
 import com.smartgnan.helpers.Options;
 import com.smartgnan.widgets.BaseWidget;
 import com.smartgnan.widgets.BoxWidget;
 import com.smartgnan.widgets.LineWidget;
+import com.smartgnan.widgets.PointerWidget;
 
 import org.w3c.dom.Node;
 
@@ -37,15 +40,16 @@ public class SingleLinkedLists extends BaseAlgorithm {
 
     @Override
     protected void UpdateOptions() {
+        this.options.add(new Options("Generate", OptionType.Event));
         this.options.add(new Options("Insert At Beginning", OptionType.Input_Event));
         this.options.add(new Options("Insert At End", OptionType.Input_Event));
         this.options.add(new Options("Insert At Position", OptionType.Input_Event));
-        this.options.add(new Options("Delete At Beginning", OptionType.Input_Event));
-        this.options.add(new Options("Delete At End", OptionType.Input_Event));
+        this.options.add(new Options("Delete At Beginning", OptionType.Event));
+        this.options.add(new Options("Delete At End", OptionType.Event));
         this.options.add(new Options("Delete At Position", OptionType.Input_Event));
-        this.options.add(new Options("Traverse", OptionType.Input_Event));
+        this.options.add(new Options("Traverse", OptionType.Event));
         this.options.add(new Options("Search", OptionType.Input_Event));
-        this.options.add(new Options("Length", OptionType.Input_Event));
+        this.options.add(new Options("Length", OptionType.Event));
     }
 
     @Override
@@ -62,37 +66,50 @@ public class SingleLinkedLists extends BaseAlgorithm {
         newNodeY = halfHeight - padding - nodeHeight;
         widgetsPerNode = 3;
 
+        PointerWidget head = new PointerWidget(startX + padding, startY + nodeHeight, 'H');
+        ExtrasNodes.add(head);
+
         InsertState("Insert an item to start");
     }
 
     @Override
     public void ProcessOptions(int index) {
         switch (index) {
-            case 0: // Insert At Beginning
+            case 0: // Generate
+                Nodes.clear();
+                InsertAtBeginning(1);
+                InsertAtEnd(2);
+                InsertAtEnd(3);
+                ClearIsUpdateOfExtras();
+                ClearIsUpdateOfNodes();
+                ClearStates();
+                InsertState("Generation completed");
+                break;
+            case 1: // Insert At Beginning
                 InsertAtBeginning(options.get(index).inputs.get(0));
                 break;
-            case 1: // Insert At End
+            case 2: // Insert At End
                 InsertAtEnd(options.get(index).inputs.get(0));
                 break;
-            case 2: // Insert At Position
+            case 3: // Insert At Position
                 InsertAtPosition(options.get(index).inputs.get(0), options.get(index).inputs.get(1));
                 break;
-            case 3: // Delete At Beginning
+            case 4: // Delete At Beginning
                 DeleteAtBeginning();
                 break;
-            case 4: // Delete At End
+            case 5: // Delete At End
                 DeleteAtEnd();
                 break;
-            case 5: // Delete At Position
+            case 6: // Delete At Position
                 DeleteAtPosition(options.get(index).inputs.get(0));
                 break;
-            case 6: // Traverse
+            case 7: // Traverse
                 Traverse();
                 break;
-            case 7: // Search
+            case 8: // Search
                 Search(options.get(index).inputs.get(0));
                 break;
-            case 8: // Length
+            case 9: // Length
                 Length();
                 break;
             default:
@@ -161,7 +178,7 @@ public class SingleLinkedLists extends BaseAlgorithm {
             if(Integer.parseInt(((BoxWidget) this.Nodes.get(i)).text) == integer) {
                 isFound = true;
                 this.Nodes.get(i).color = Helper.ColorOrange;
-                InsertState("Given value is present at " + (i%widgetsPerNode) + " position");
+                InsertState("Given value is present at " + (i/widgetsPerNode) + " position");
                 return;
             }
             else {
@@ -196,6 +213,7 @@ public class SingleLinkedLists extends BaseAlgorithm {
 
             this.Nodes.get(i).color = Helper.ColorRed;
             InsertState("Value at current node is " + ((BoxWidget) this.Nodes.get(i)).text);
+            values += ((BoxWidget) this.Nodes.get(i)).text;
         }
 
         InsertState("Next node is not available");
@@ -207,25 +225,88 @@ public class SingleLinkedLists extends BaseAlgorithm {
     }
 
     private void DeleteAtPosition(Integer position) {
-        States.clear();
+        ClearStates();
 
-        InsertState("Checking for given position is valid value?");
-        if(position < 0 && position > this.Nodes.size() % widgetsPerNode) {
+        if(position < 0 || position > this.Nodes.size() / widgetsPerNode) {
             InsertState("Invalid position");
             return;
         }
 
-        InsertState("Checking for given position at the beginning?");
-        if(position == 0) {
-            InsertState("Given position is 0 hence performing Delete At Beginning");
+        if(position == 0 || Nodes.size() == 1) {
             DeleteAtBeginning();
             return;
         }
 
-        InsertState("Checking for given position at the end?");
-        if(position == Nodes.size() % widgetsPerNode) {
-            InsertState("Given position is the length of linked list, hence performing Delete At End");
+        if(position == (Nodes.size() / widgetsPerNode)) {
             DeleteAtEnd();
+            return;
+        }
+
+        InsertState("Initial State of the Linked List");
+
+        int i = 0;
+        Nodes.get(i).color = Helper.ColorRed;
+        InsertState("Starting with head");
+        i += widgetsPerNode;
+
+        while(i <= (position * widgetsPerNode)) {
+            int j = i - widgetsPerNode - widgetsPerNode;
+            int k = i - widgetsPerNode;
+            if(j >= 0) {
+                Nodes.get(j).color = Helper.ColorOrange;
+            }
+            if(k >= 0) {
+                Nodes.get(k).color = Helper.ColorBlue;
+            }
+            Nodes.get(i).color = Helper.ColorRed;
+            InsertState("Proceeding to next");
+            i += widgetsPerNode;
+        }
+
+        //point new node to current node
+        int currIdx = i - widgetsPerNode;
+        int prevIdx = currIdx - widgetsPerNode;
+        int nextIdx = currIdx + widgetsPerNode;
+
+        ((LineWidget) Nodes.get(currIdx - 1)).UpdateNewBounds((int)(((BoxWidget) Nodes.get(prevIdx + 1)).x + pointerWidth / 2),
+                (int)(((BoxWidget) Nodes.get(prevIdx + 1)).y + nodeHeight / 2),
+                ((int) ((BoxWidget) Nodes.get(nextIdx)).x),
+                ((int) ((BoxWidget) Nodes.get(nextIdx)).y) +  nodeHeight / 2);
+
+        ((BoxWidget) Nodes.get(currIdx)).UpdateNewBounds(newNodeX, newNodeY);
+        ((BoxWidget) Nodes.get(currIdx+1)).UpdateNewBounds(newNodeX+valueWidth, newNodeY);
+        ((LineWidget) Nodes.get(currIdx+2)).UpdateNewBounds((int)(((BoxWidget) Nodes.get(currIdx + 1)).x + pointerWidth / 2),
+                (int)(((BoxWidget) Nodes.get(currIdx + 1)).y + nodeHeight / 2),
+                ((int) ((BoxWidget) Nodes.get(nextIdx)).x),
+                ((int) ((BoxWidget) Nodes.get(nextIdx)).y) +  nodeHeight / 2);
+
+        InsertState("Updating previous node link to next node");
+
+        ((LineWidget) Nodes.get(currIdx - 1)).isUpdated = false;
+        ((LineWidget) Nodes.get(currIdx+2)).isUpdated = false;
+        Nodes.remove(currIdx);
+        Nodes.remove(currIdx);
+        Nodes.remove(currIdx);
+
+        InsertState("Deleting the current node");
+
+        ((BoxWidget) Nodes.get(prevIdx)).color = Helper.ColorOrange;
+        ((BoxWidget) Nodes.get(currIdx)).color = Helper.ColorOrange;
+
+        ReArrangeAllNode();
+        InsertState("Final State of Linked List");
+
+        ClearIsUpdateOfNodes();
+        ClearIsUpdateOfExtras();
+    }
+
+    private void DeleteAtEnd() {
+        ClearStates();
+
+        InsertState("Initial Status of Linked List");
+
+        if(Nodes.size() == 0) {
+            InsertState("List is empty");
             return;
         }
 
@@ -234,75 +315,79 @@ public class SingleLinkedLists extends BaseAlgorithm {
         InsertState("Starting with head");
         i += widgetsPerNode;
 
-        while(i < position) {
-            int j = i -widgetsPerNode - widgetsPerNode;
+        while(i < Nodes.size()) {
+            int j = i - widgetsPerNode - widgetsPerNode;
+            int k = i - widgetsPerNode;
             if(j >= 0) {
                 Nodes.get(j).color = Helper.ColorOrange;
             }
-            Nodes.get(i-widgetsPerNode).color = Helper.ColorBlue;
+            if(k >= 0) {
+                Nodes.get(k).color = Helper.ColorBlue;
+            }
             Nodes.get(i).color = Helper.ColorRed;
-            InsertState("Proceeding to next");
+            InsertState("Proceeding till last node");
             i += widgetsPerNode;
         }
 
-        //point prev node to next node
-        //TODO
-        InsertState("Linking previous node with next node");
+        int currIdx = Nodes.size() - widgetsPerNode + 1;
 
-        Nodes.remove(i);
-        Nodes.remove(i+1);
-        //TODO
-
-        InsertState("Final State of Linked List after deleting");
-    }
-
-    private void DeleteAtEnd() {
-        States.clear();
-
-        int i = 0;
-        this.Nodes.get(i).color = Helper.ColorRed;
-        InsertState("Starting at head");
-        i += widgetsPerNode;
-
-        while(i < this.Nodes.size() % widgetsPerNode) {
-            this.Nodes.get(i - widgetsPerNode).color = Helper.ColorOrange;
-            this.Nodes.get(i).color = Helper.ColorRed;
-            i+= widgetsPerNode;
-            InsertState("Selecting next node and marking previous node");
+        if(currIdx - 1 >= 0) {
+            Nodes.remove(currIdx - 1);
+            InsertState("Deleting link between previous node and last node");
         }
 
-        this.Nodes.get(i).color = Helper.ColorRed;
-        InsertState("Selecting tail node");
+        Nodes.remove(Nodes.size()-1);
+        Nodes.remove(Nodes.size()-1);
+        InsertState("Deleting last node");
 
-        InsertState("Moving tail to previous node");
-
-        this.Nodes.remove(i);
-        this.Nodes.remove(i+1);
-        if(i > 0) {
-            this.Nodes.remove(i - 1);
+        if(Nodes.size() > 0) {
+            Nodes.get(Nodes.size() - widgetsPerNode + 1).color = Helper.ColorOrange;
         }
+        InsertState("Final State of Linked Lists");
 
-        InsertState("Final State of Linked List");
+        ClearIsUpdateOfNodes();
+        ClearIsUpdateOfExtras();
     }
 
     private void DeleteAtBeginning() {
-        States.clear();
+        ClearStates();
+
+        InsertState("Initial Status of Linked List");
+
+        if(Nodes.size() == 0) {
+            InsertState("List is empty");
+            return;
+        }
 
         this.Nodes.get(0).color = Helper.ColorRed;
         InsertState("Starting with head");
 
-        InsertState("Moving head to next node");
+        if(Nodes.size() > widgetsPerNode) {
+            float hx = ((BoxWidget) Nodes.get(widgetsPerNode)).x;
+            float hy = ((BoxWidget) Nodes.get(widgetsPerNode)).y;
+            ((PointerWidget) ExtrasNodes.get(0)).UpdateLocation(((int) hx), ((int) hy) + nodeHeight);
+            InsertState("Moving head to next node");
+        }
 
         this.Nodes.remove(0);
-        this.Nodes.remove(1);
-        //TODO
+        this.Nodes.remove(0);
+        if(this.Nodes.size() != 0) {
+            this.Nodes.remove(0);
+        }
+        ((PointerWidget) ExtrasNodes.get(0)).isUpdated = false;
+        InsertState("Deleting first node");
 
         ReArrangeAllNode();
+        ((PointerWidget) ExtrasNodes.get(0)).UpdateLocation(startX + padding, startY + nodeHeight);
         InsertState("Final State of the Linked List");
+
+        ClearIsUpdateOfNodes();
+        ClearIsUpdateOfExtras();
     }
 
     private void InsertAtPosition(Integer integer, Integer position) {
-        States.clear();
+        ClearStates();
+        InsertState("Initial State of the Linked List");
 
         InsertState("Checking for given position is valid value?");
         if(position < 0) {
@@ -310,72 +395,166 @@ public class SingleLinkedLists extends BaseAlgorithm {
             return;
         }
 
+        if(Nodes.size() == 0) {
+            InsertState("Linked List is Empty hence performing Insert At Beginning");
+            InternalInsertAtBeginning(integer);
+            return;
+        }
+
         InsertState("Checking for given position at the beginning?");
         if(position == 0) {
             InsertState("Given position is 0 hence performing Insert At Beginning");
-            InsertAtBeginning(integer);
+            InternalInsertAtBeginning(integer);
             return;
         }
 
         InsertState("Checking for given position at the end?");
-        if(position > Nodes.size() % widgetsPerNode) {
+        if(position > Nodes.size() / widgetsPerNode) {
             InsertState("Given position is greater than length of linked list, hence performing Insert At End");
-            InsertAtEnd(integer);
+            InternalInsertAtEnd(integer);
             return;
         }
+
+        CreateNewNode(integer);
 
         int i = 0;
         Nodes.get(i).color = Helper.ColorRed;
         InsertState("Starting with head");
         i += widgetsPerNode;
 
-        while(i < position) {
-            int j = i -widgetsPerNode - widgetsPerNode;
+        while(i <= (position * widgetsPerNode)) {
+            int j = i - widgetsPerNode - widgetsPerNode;
+            int k = i - widgetsPerNode;
             if(j >= 0) {
                 Nodes.get(j).color = Helper.ColorOrange;
             }
-            Nodes.get(i-widgetsPerNode).color = Helper.ColorBlue;
-            Nodes.get(i).color = Helper.ColorRed;
+            if(k >= 0) {
+                Nodes.get(k).color = Helper.ColorBlue;
+            }
+             Nodes.get(i).color = Helper.ColorRed;
             InsertState("Proceeding to next");
             i += widgetsPerNode;
         }
 
         //point new node to current node
-        //TODO
+        int currIdx = i - widgetsPerNode;
+        int prevIdx = currIdx - widgetsPerNode;
+        int newNodeIdx = Nodes.size() - widgetsPerNode + 1;
+        CreateLine(((BoxWidget) Nodes.get(newNodeIdx)), ((BoxWidget) Nodes.get(currIdx)), -1);
         InsertState("Linking new node with current node");
 
         //point previous node to new node
-        //TODO
+        CreateLine(((BoxWidget) Nodes.get(prevIdx)), ((BoxWidget) Nodes.get(newNodeIdx)), -1);
+        Nodes.remove(currIdx-1);
         InsertState("Linking previous node with new node");
 
-        i = Nodes.size() - widgetsPerNode;
-        BoxWidget valueNode = new BoxWidget(((BoxWidget) Nodes.get(i)));
-        BoxWidget pointerNode = new BoxWidget(((BoxWidget) Nodes.get(i+1)));
-        //TODO
+        i = Nodes.size() - 1;
+        LineWidget prevToNew = new LineWidget(((LineWidget) Nodes.get(i)));
+        --i;
+        LineWidget newToCurr = new LineWidget(((LineWidget) Nodes.get(i)));
+        --i;
+        BoxWidget pointerNode= new BoxWidget(((BoxWidget) Nodes.get(i)));
+        --i;
+        BoxWidget valueNode  = new BoxWidget(((BoxWidget) Nodes.get(i)));
 
-        Nodes.remove(i);
-        Nodes.remove(i+1);
-        //TODO
+        Nodes.remove(Nodes.size()-1);
+        Nodes.remove(Nodes.size()-1);
+        Nodes.remove(Nodes.size()-1);
+        Nodes.remove(Nodes.size()-1);
 
-        i = position * widgetsPerNode;
+        i = prevIdx + widgetsPerNode - 1;
+        Nodes.add(i, prevToNew);
+        ++i;
         Nodes.add(i, valueNode);
-        Nodes.add(i+1, pointerNode);
-        //TODO
+        ++i;
+        Nodes.add(i, pointerNode);
+        ++i;
+        Nodes.add(i, newToCurr);
+
+        ((BoxWidget) Nodes.get(prevIdx)).color = Helper.ColorOrange;
+        ((BoxWidget) Nodes.get(i+1)).color = Helper.ColorOrange;
 
         ReArrangeAllNode();
         InsertState("Final State of Linked List");
+
+        ClearIsUpdateOfNodes();
+        ClearIsUpdateOfExtras();
+    }
+
+    private void InternalInsertAtEnd(Integer integer) {
+        CreateNewNode(integer);
+        int i = 0;
+        for(i = 0; i < Nodes.size() - widgetsPerNode; i+=widgetsPerNode) {
+            if(i == 0) {
+                this.Nodes.get(i).color = Helper.ColorRed;
+                InsertState("Starting from head node");
+            }
+            else {
+                this.Nodes.get(i).color = Helper.ColorRed;
+                this.Nodes.get(i-(widgetsPerNode)).color = Helper.ColorOrange;
+                InsertState("Traversing till we find last node");
+            }
+        }
+
+        int fromIdx = Nodes.size() - widgetsPerNode;
+        int toIdx = fromIdx + 1;
+
+        //Create a link from new node from tail
+        CreateLine(((BoxWidget) Nodes.get(fromIdx)), ((BoxWidget) Nodes.get(toIdx)), fromIdx + 1);
+        InsertState("Created link from last node to new node");
+
+
+        this.Nodes.get(i-widgetsPerNode).color = Helper.ColorOrange;
+        ReArrangeAllNode();
+        InsertState("Final State of Linked List");
+
+        ClearIsUpdateOfNodes();
+        ClearIsUpdateOfExtras();
     }
 
     private void InsertAtEnd(Integer integer) {
-        States.clear();
+        if(this.Nodes.size() == 0) {
+            InsertAtBeginning(integer);
+            return;
+        }
 
+        ClearStates();
+
+        InsertState("Initial State of the Linked List");
+
+        InternalInsertAtEnd(integer);
+    }
+
+    private void InsertAtBeginning(Integer integer) {
+        ClearStates();
+
+        InsertState("Initial State of the Linked List");
+
+        InternalInsertAtBeginning(integer);
+    }
+
+    private void InternalInsertAtBeginning(Integer integer) {
         CreateNewNode(integer);
 
-        //Create a link from new node from tail
-        //TODO
+        if(Nodes.size() > widgetsPerNode-1) {
+            //Create a link from new node to existing head
+            CreateLine(((BoxWidget) Nodes.get(Nodes.size() - (widgetsPerNode - 1))), ((BoxWidget) Nodes.get(widgetsPerNode - 2)), -1);
+            InsertState("Created link from new node to head node");
+
+            Collections.rotate(this.Nodes, widgetsPerNode);
+        }
+
+        float hx = ((BoxWidget) Nodes.get(0)).x;
+        float hy = ((BoxWidget) Nodes.get(0)).y;
+        ((PointerWidget) ExtrasNodes.get(0)).UpdateLocation(((int) hx), ((int) hy) + nodeHeight);
+        InsertState("Assigning head to new node");
 
         ReArrangeAllNode();
+        ((PointerWidget) ExtrasNodes.get(0)).UpdateLocation(startX + padding, startY + nodeHeight);
         InsertState("Final State of Linked List");
+
+        ClearIsUpdateOfNodes();
+        ClearIsUpdateOfExtras();
     }
 
     private void ReArrangeAllNode() {
@@ -385,7 +564,13 @@ public class SingleLinkedLists extends BaseAlgorithm {
         int i  = 0;
 
         while(i < Nodes.size()) {
-            ((BoxWidget) Nodes.get(i)).UpdateNewBounds(x, y);
+            if (BoxWidget.class.isInstance(this.Nodes.get(i))) {
+                ((BoxWidget) Nodes.get(i)).UpdateNewBounds(x, y);
+            }
+            else if (LineWidget.class.isInstance(this.Nodes.get(i))) {
+                ((LineWidget) Nodes.get(i)).UpdateNewBounds(x - pointerWidth/2, y + nodeHeight / 2, x + lineWidth, y + nodeHeight / 2);
+            }
+
             if(i % widgetsPerNode == 0) {
                 x += valueWidth;
             }
@@ -395,29 +580,29 @@ public class SingleLinkedLists extends BaseAlgorithm {
             else {
                 x += lineWidth;
             }
+            ++i;
         }
     }
 
-    private void InsertAtBeginning(Integer integer) {
-        States.clear();
+    private void CreateLine(BoxWidget from, BoxWidget to, int index) {
+        float x1  = from.x + pointerWidth / 2;
+        float y1 = from.y + nodeHeight / 2;
+        float x2 = to.x;
+        float y2 = to.y + nodeHeight / 2;
 
-        CreateNewNode(integer);
-
-        if(Nodes.size() > widgetsPerNode) {
-            //Create a link from new node to existing head
-            //TODO
-
-            Collections.rotate(this.Nodes, widgetsPerNode);
-
-            ReArrangeAllNode();
+        LineWidget link = new LineWidget(x1, y1, x2, y2, true, false);
+        if(index == -1) {
+            this.Nodes.add(link);
         }
-
-        InsertState("Final State of Linked List");
+        else {
+            this.Nodes.add(index, link);
+        }
     }
 
     private void CreateNewNode(int value) {
-        BoxWidget valueNode = new BoxWidget(newNodeX, newNodeY, valueWidth, nodeHeight, "" + value);
+        BoxWidget valueNode = new BoxWidget(newNodeX, newNodeY, valueWidth, nodeHeight, "" + value, BoxWidgetTextLocation.Center);
         BoxWidget pointerNode = new BoxWidget(newNodeX+valueWidth, newNodeY, pointerWidth, nodeHeight);
+        pointerNode.color = Helper.ColorLightBlue;
 
         this.Nodes.add(valueNode);
         this.Nodes.add(pointerNode);
@@ -447,5 +632,15 @@ public class SingleLinkedLists extends BaseAlgorithm {
         State s = new State(copyNodes);
         s.info = info;
         this.States.add(s);
+
+        ArrayList<BaseWidget> copyExtraNodes = new ArrayList<>();
+        for(int i = 0; i < this.ExtrasNodes.size(); i++) {
+            if(PointerWidget.class.isInstance(this.ExtrasNodes.get(i))) {
+                copyExtraNodes.add(new PointerWidget(((PointerWidget) this.ExtrasNodes.get(i))));
+            }
+        }
+
+        State e = new State(copyExtraNodes);
+        this.Extras.add(e);
     }
 }

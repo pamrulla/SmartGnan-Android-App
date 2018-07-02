@@ -18,6 +18,8 @@ public abstract class BaseAlgorithm {
     public ArrayList<State> States;
     public ArrayList<BaseWidget> Background;
     public ArrayList<BaseWidget> Nodes;
+    public ArrayList<State> Extras;
+    public ArrayList<BaseWidget> ExtrasNodes;
     protected int screenWidth;
     int screenHeight;
     protected int halfHeight;
@@ -33,6 +35,8 @@ public abstract class BaseAlgorithm {
         this.Background = new ArrayList<BaseWidget>();
         this.Nodes = new ArrayList<>();
         this.options = new ArrayList<>();
+        this.Extras = new ArrayList<>();
+        this.ExtrasNodes = new ArrayList<>();
         Init();
         UpdateOptions();
     }
@@ -71,4 +75,21 @@ public abstract class BaseAlgorithm {
     }
 
     public abstract void InsertState(String info);
+
+    public void ClearStates() {
+        States.clear();
+        Extras.clear();
+    }
+
+    public void ClearIsUpdateOfNodes() {
+        for(int i = 0; i < Nodes.size(); i++) {
+            Nodes.get(i).isUpdated = false;
+        }
+    }
+
+    public void ClearIsUpdateOfExtras() {
+        for(int i = 0; i < ExtrasNodes.size(); i++) {
+            ExtrasNodes.get(i).isUpdated = false;
+        }
+    }
 }

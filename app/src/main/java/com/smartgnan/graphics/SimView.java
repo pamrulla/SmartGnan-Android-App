@@ -57,8 +57,9 @@ public class SimView extends View {
         for (BaseWidget w : this.Algorithm.getStates().get(currentIndex).Nodes) {
             w.Animate();
         }
-
-        invalidate();
+        for (BaseWidget w : this.Algorithm.Extras.get(currentIndex).Nodes) {
+            w.Animate();
+        }
     }
 
     @Override
@@ -67,11 +68,20 @@ public class SimView extends View {
         for(BaseWidget w : this.Algorithm.Background) {
             w.RenderWidget(canvas);
         }
+
+        if(this.Algorithm.Extras.size() > 0) {
+            for (BaseWidget w : this.Algorithm.Extras.get(currentIndex).Nodes) {
+                w.RenderWidget(canvas);
+            }
+        }
+
         if(this.Algorithm.States.size() > 0) {
             for (BaseWidget w : this.Algorithm.getStates().get(currentIndex).Nodes) {
                 w.RenderWidget(canvas);
             }
         }
+
+        invalidate();
     }
 
     public void SetCurrentIndex(int currentIndex) {
