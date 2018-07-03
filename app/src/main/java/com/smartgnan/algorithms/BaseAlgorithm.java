@@ -1,5 +1,7 @@
 package com.smartgnan.algorithms;
 
+import android.view.View;
+
 import com.smartgnan.graphics.State;
 import com.smartgnan.helpers.Options;
 import com.smartgnan.widgets.BaseWidget;
@@ -75,6 +77,8 @@ public abstract class BaseAlgorithm {
     }
 
     public abstract void InsertState(String info);
+
+    public abstract void UpdateActionView(View customView, int index);
 
     public void ClearStates() {
         States.clear();

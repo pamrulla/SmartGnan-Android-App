@@ -2,12 +2,21 @@ package com.smartgnan.algorithms.Stack;
 
 import android.graphics.Color;
 import android.graphics.Point;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.smartgnan.algorithms.BaseAlgorithm;
 import com.smartgnan.graphics.State;
 import com.smartgnan.helpers.Helper;
 import com.smartgnan.helpers.OptionType;
 import com.smartgnan.helpers.Options;
+import com.smartgnan.smartalgo.R;
 import com.smartgnan.widgets.BaseWidget;
 import com.smartgnan.widgets.BoxWidget;
 import com.smartgnan.widgets.PathWidget;
@@ -23,6 +32,7 @@ public class Stack extends BaseAlgorithm {
     int maxCount = 8;
 
     ArrayList<Integer> dataset;
+    int dialogValue;
 
     public Stack(int w, int h) {
         super("Stack", w, h);
@@ -63,7 +73,7 @@ public class Stack extends BaseAlgorithm {
     public void ProcessOptions(int index) {
         switch (index) {
             case 0: //Push
-                Push(options.get(index).inputs.get(0));
+                Push(dialogValue);
                 break;
             case 1: //Pop
                 Pop();
@@ -176,5 +186,37 @@ public class Stack extends BaseAlgorithm {
         State s = new State(copyNodes);
         s.info = info;
         this.States.add(s);
+    }
+
+    @Override
+    public void UpdateActionView(View customView, int index) {
+        LinearLayout mainLayout = (LinearLayout)customView.findViewById(R.id.mainlayout);
+
+        EditText v1 = new EditText(customView.getContext());
+        v1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        v1.setInputType(InputType.TYPE_CLASS_NUMBER);
+        v1.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+        v1.setSingleLine();
+        v1.setEms(10);
+        v1.setHint("Enter value to Push");
+        mainLayout.addView(v1);
+
+        v1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                dialogValue = Integer.parseInt(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 }

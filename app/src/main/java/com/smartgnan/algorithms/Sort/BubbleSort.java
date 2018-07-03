@@ -2,13 +2,25 @@ package com.smartgnan.algorithms.Sort;
 
 import android.content.ContentProviderOperation;
 import android.os.Debug;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.smartgnan.algorithms.BaseAlgorithm;
 import com.smartgnan.graphics.State;
 import com.smartgnan.helpers.Helper;
 import com.smartgnan.helpers.OptionType;
 import com.smartgnan.helpers.Options;
+import com.smartgnan.smartalgo.R;
 import com.smartgnan.widgets.BaseWidget;
 import com.smartgnan.widgets.BoxWidget;
 
@@ -156,5 +168,50 @@ public class BubbleSort extends BaseAlgorithm {
         State s = new State(copyNodes);
         s.info = info;
         this.States.add(s);
+    }
+
+    @Override
+    public void UpdateActionView(View customView, int index) {
+        options.get(0).inputs.clear();
+        LinearLayout mainLayout = (LinearLayout)customView.findViewById(R.id.mainlayout);
+
+        TextView info1 = new TextView(customView.getContext());
+        info1.setText("Enter Values");
+        info1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mainLayout.addView(info1);
+
+        LinearLayout hor = new LinearLayout(customView.getContext());
+        hor.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+
+        for(int i = 1; i <= 8; i++) {
+            EditText v1 = new EditText(customView.getContext());
+            v1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT, 0.1f));
+            v1.setInputType(InputType.TYPE_CLASS_NUMBER);
+            v1.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+            v1.setSingleLine();
+            v1.setEms(10);
+            hor.addView(v1);
+
+            v1.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    options.get(0).inputs.add(Integer.parseInt(charSequence.toString()));
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
+        }
+
+        mainLayout.addView(hor);
     }
 }

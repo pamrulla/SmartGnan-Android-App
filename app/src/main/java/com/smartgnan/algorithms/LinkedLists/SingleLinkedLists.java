@@ -2,6 +2,18 @@ package com.smartgnan.algorithms.LinkedLists;
 
 import android.graphics.Point;
 import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.smartgnan.algorithms.BaseAlgorithm;
 import com.smartgnan.graphics.State;
@@ -9,6 +21,7 @@ import com.smartgnan.helpers.BoxWidgetTextLocation;
 import com.smartgnan.helpers.Helper;
 import com.smartgnan.helpers.OptionType;
 import com.smartgnan.helpers.Options;
+import com.smartgnan.smartalgo.R;
 import com.smartgnan.widgets.BaseWidget;
 import com.smartgnan.widgets.BoxWidget;
 import com.smartgnan.widgets.LineWidget;
@@ -16,6 +29,7 @@ import com.smartgnan.widgets.PointerWidget;
 
 import org.w3c.dom.Node;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -34,6 +48,10 @@ public class SingleLinkedLists extends BaseAlgorithm {
     int newNodeY;
     int widgetsPerNode;
 
+    int dialogValue = -1;
+    int dialogPosition = -1;
+    int dialogOption = 100;
+
     public SingleLinkedLists(int w, int h) {
         super("Single Linked Lists", w, h);
     }
@@ -41,14 +59,10 @@ public class SingleLinkedLists extends BaseAlgorithm {
     @Override
     protected void UpdateOptions() {
         this.options.add(new Options("Generate", OptionType.Event));
-        this.options.add(new Options("Insert At Beginning", OptionType.Input_Event));
-        this.options.add(new Options("Insert At End", OptionType.Input_Event));
-        this.options.add(new Options("Insert At Position", OptionType.Input_Event));
-        this.options.add(new Options("Delete At Beginning", OptionType.Event));
-        this.options.add(new Options("Delete At End", OptionType.Event));
-        this.options.add(new Options("Delete At Position", OptionType.Input_Event));
-        this.options.add(new Options("Traverse", OptionType.Event));
+        this.options.add(new Options("Insert", OptionType.Input_Event));
+        this.options.add(new Options("Delete", OptionType.Input_Event));
         this.options.add(new Options("Search", OptionType.Input_Event));
+        this.options.add(new Options("Traverse", OptionType.Event));
         this.options.add(new Options("Length", OptionType.Event));
     }
 
@@ -85,31 +99,35 @@ public class SingleLinkedLists extends BaseAlgorithm {
                 ClearStates();
                 InsertState("Generation completed");
                 break;
-            case 1: // Insert At Beginning
-                InsertAtBeginning(options.get(index).inputs.get(0));
+            case 1: // Insert
+                if(dialogOption == 100) {
+                    InsertAtBeginning(dialogValue);
+                }
+                else if(dialogOption == 101) {
+                    InsertAtPosition(dialogValue, dialogPosition);
+                }
+                else if(dialogOption == 102) {
+                    InsertAtEnd(dialogValue);
+                }
                 break;
-            case 2: // Insert At End
-                InsertAtEnd(options.get(index).inputs.get(0));
+            case 2: // Delete
+                if(dialogOption == 100) {
+                    DeleteAtBeginning();
+                }
+                else if(dialogOption == 101) {
+                    DeleteAtPosition(dialogPosition);
+                }
+                else if(dialogOption == 102) {
+                    DeleteAtEnd();
+                }
                 break;
-            case 3: // Insert At Position
-                InsertAtPosition(options.get(index).inputs.get(0), options.get(index).inputs.get(1));
+            case 3: // Search
+                Search(dialogValue);
                 break;
-            case 4: // Delete At Beginning
-                DeleteAtBeginning();
-                break;
-            case 5: // Delete At End
-                DeleteAtEnd();
-                break;
-            case 6: // Delete At Position
-                DeleteAtPosition(options.get(index).inputs.get(0));
-                break;
-            case 7: // Traverse
+            case 4: // Traverse
                 Traverse();
                 break;
-            case 8: // Search
-                Search(options.get(index).inputs.get(0));
-                break;
-            case 9: // Length
+            case 5: // Length
                 Length();
                 break;
             default:
@@ -642,5 +660,240 @@ public class SingleLinkedLists extends BaseAlgorithm {
 
         State e = new State(copyExtraNodes);
         this.Extras.add(e);
+    }
+
+    @Override
+    public void UpdateActionView(View customView, int index) {
+        switch (index) {
+            case 1:
+                GUIForInsertOperation(customView);
+                break;
+            case 2:
+                GUIForDeleteOperation(customView);
+                break;
+            case 3:
+                GUIForSearchOperation(customView);
+                break;
+        }
+    }
+
+    private void GUIForInsertOperation(View customView) {
+        LinearLayout mainLayout = (LinearLayout)customView.findViewById(R.id.mainlayout);
+
+        TextView info1 = new TextView(customView.getContext());
+        info1.setText("Select your option");
+        info1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mainLayout.addView(info1);
+
+        RadioGroup optionsGroup = new RadioGroup(customView.getContext());
+        optionsGroup.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        RadioButton atTheBeginning = new RadioButton(customView.getContext());
+        atTheBeginning.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        atTheBeginning.setText("Insert At Beginning");
+        atTheBeginning.setId(100);
+        optionsGroup.addView(atTheBeginning);
+
+        final RadioButton atThePosition = new RadioButton(customView.getContext());
+        atThePosition.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        atThePosition.setText("Insert At Position");
+        atThePosition.setId(101);
+        optionsGroup.addView(atThePosition);
+
+        RadioButton atTheEnd = new RadioButton(customView.getContext());
+        atTheEnd.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        atTheEnd.setText("Insert At End");
+        atTheEnd.setId(102);
+        optionsGroup.addView(atTheEnd);
+
+        mainLayout.addView(optionsGroup);
+
+        EditText v1 = new EditText(customView.getContext());
+        v1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        v1.setInputType(InputType.TYPE_CLASS_NUMBER);
+        v1.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+        v1.setSingleLine();
+        v1.setEms(10);
+        v1.setHint("Enter value to insert");
+        mainLayout.addView(v1);
+
+        v1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                dialogValue = Integer.parseInt(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        final EditText v2 = new EditText(customView.getContext());
+        v2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        v2.setInputType(InputType.TYPE_CLASS_NUMBER);
+        v2.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+        v2.setSingleLine();
+        v2.setEms(6);
+        v2.setHint("Enter position to insert");
+        v2.setVisibility(View.INVISIBLE);
+        mainLayout.addView(v2);
+
+        v2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                dialogPosition = Integer.parseInt(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        optionsGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if(i == 101) {
+                    v2.setVisibility(View.VISIBLE);
+                    dialogOption = 101;
+                }
+                else if(i == 100) {
+                    v2.setVisibility(View.INVISIBLE);
+                    dialogOption = 100;
+                }
+                else if(i == 102) {
+                    v2.setVisibility(View.INVISIBLE);
+                    dialogOption = 102;
+                }
+            }
+        });
+    }
+
+    private void GUIForDeleteOperation(View customView) {
+        LinearLayout mainLayout = (LinearLayout)customView.findViewById(R.id.mainlayout);
+
+        TextView info1 = new TextView(customView.getContext());
+        info1.setText("Select your option");
+        info1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mainLayout.addView(info1);
+
+        RadioGroup optionsGroup = new RadioGroup(customView.getContext());
+        optionsGroup.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        RadioButton atTheBeginning = new RadioButton(customView.getContext());
+        atTheBeginning.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        atTheBeginning.setText("Delete At Beginning");
+        atTheBeginning.setId(100);
+        optionsGroup.addView(atTheBeginning);
+
+        final RadioButton atThePosition = new RadioButton(customView.getContext());
+        atThePosition.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        atThePosition.setText("Delete At Position");
+        atThePosition.setId(101);
+        optionsGroup.addView(atThePosition);
+
+        RadioButton atTheEnd = new RadioButton(customView.getContext());
+        atTheEnd.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        atTheEnd.setText("Delete At End");
+        atTheEnd.setId(102);
+        optionsGroup.addView(atTheEnd);
+
+        mainLayout.addView(optionsGroup);
+
+        final EditText v2 = new EditText(customView.getContext());
+        v2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        v2.setInputType(InputType.TYPE_CLASS_NUMBER);
+        v2.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+        v2.setSingleLine();
+        v2.setEms(6);
+        v2.setHint("Enter position to insert");
+        v2.setVisibility(View.INVISIBLE);
+        mainLayout.addView(v2);
+
+        v2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                dialogPosition = Integer.parseInt(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        optionsGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if(i == 101) {
+                    v2.setVisibility(View.VISIBLE);
+                    dialogOption = 101;
+                }
+                else if(i == 100) {
+                    v2.setVisibility(View.INVISIBLE);
+                    dialogOption = 100;
+                }
+                else if(i == 102) {
+                    v2.setVisibility(View.INVISIBLE);
+                    dialogOption = 102;
+                }
+            }
+        });
+    }
+
+    private void GUIForSearchOperation(View customView) {
+        LinearLayout mainLayout = (LinearLayout)customView.findViewById(R.id.mainlayout);
+
+        EditText v1 = new EditText(customView.getContext());
+        v1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        v1.setInputType(InputType.TYPE_CLASS_NUMBER);
+        v1.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+        v1.setSingleLine();
+        v1.setEms(10);
+        v1.setHint("Enter value to search for");
+        mainLayout.addView(v1);
+
+        v1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                dialogValue = Integer.parseInt(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 }

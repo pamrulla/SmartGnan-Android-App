@@ -155,30 +155,13 @@ public class SimActivity extends AppCompatActivity {
 
     private void openDialogBox(final int index) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Input values");
+        builder.setTitle("Action");
 
         LayoutInflater inflater = getLayoutInflater();
         View customView = inflater.inflate(R.layout.input_values, null);
+        Algorithm.UpdateActionView(customView, index);
 
         builder.setView(customView);
-
-        final EditText v1 = (EditText)customView.findViewById(R.id.v1);
-        final EditText v2 = (EditText)customView.findViewById(R.id.v2);
-        final EditText v3 = (EditText)customView.findViewById(R.id.v3);
-        final EditText v4 = (EditText)customView.findViewById(R.id.v4);
-        final EditText v5 = (EditText)customView.findViewById(R.id.v5);
-        final EditText v6 = (EditText)customView.findViewById(R.id.v6);
-        final EditText v7 = (EditText)customView.findViewById(R.id.v7);
-        final EditText v8 = (EditText)customView.findViewById(R.id.v8);
-
-        v1.setNextFocusForwardId(R.id.v2);
-        v2.setNextFocusForwardId(R.id.v3);
-        v3.setNextFocusForwardId(R.id.v4);
-        v4.setNextFocusForwardId(R.id.v5);
-        v5.setNextFocusForwardId(R.id.v6);
-        v6.setNextFocusForwardId(R.id.v7);
-        v7.setNextFocusForwardId(R.id.v8);
-
         final AlertDialog dialog = builder.create();
         dialog.show();
 
@@ -194,31 +177,6 @@ public class SimActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Algorithm.options.get(index).inputs.clear();
-                if(v1.getText().toString().length() > 0) {
-                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v1.getText().toString()));
-                }
-                if(v2.getText().toString().length() > 0) {
-                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v2.getText().toString()));
-                }
-                if(v3.getText().toString().length() > 0) {
-                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v3.getText().toString()));
-                }
-                if(v4.getText().toString().length() > 0) {
-                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v4.getText().toString()));
-                }
-                if(v5.getText().toString().length() > 0) {
-                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v5.getText().toString()));
-                }
-                if(v6.getText().toString().length() > 0) {
-                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v6.getText().toString()));
-                }
-                if(v7.getText().toString().length() > 0) {
-                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v7.getText().toString()));
-                }
-                if(v8.getText().toString().length() > 0) {
-                    Algorithm.options.get(index).inputs.add(Integer.parseInt(v8.getText().toString()));
-                }
                 dialog.cancel();
                 Algorithm.ProcessOptions(index);
                 AfterProcess();
@@ -227,7 +185,7 @@ public class SimActivity extends AppCompatActivity {
     }
 
     public void AfterGotSize(int w, int h) {
-        type = SingleLinkedLists.class;
+        type = BubbleSort.class;
         try {
             try {
                 Constructor cns = type.getConstructor(new Class[] { int.class, int.class});
