@@ -25,6 +25,7 @@ import com.smartgnan.helpers.Options;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.ToIntFunction;
 
@@ -185,7 +186,7 @@ public class SimActivity extends AppCompatActivity {
     }
 
     public void AfterGotSize(int w, int h) {
-        type = BubbleSort.class;
+        type = SingleLinkedLists.class;
         try {
             try {
                 Constructor cns = type.getConstructor(new Class[] { int.class, int.class});
