@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.smartgnan.data.AlgorithmsData;
 import com.smartgnan.graphics.SimView;
 
 public class AlgorithmsListActivity extends AppCompatActivity {
@@ -14,6 +15,10 @@ public class AlgorithmsListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_algorithms_list);
+
+        Intent intent = getIntent();
+        int i = intent.getIntExtra("Index", 0);
+        setTitle(AlgorithmsData.Categories.get(i).Name);
 
         Button b = (Button) findViewById(R.id.simBtn);
 

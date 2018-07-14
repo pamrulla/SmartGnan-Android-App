@@ -8,7 +8,7 @@ import com.smartgnan.algorithms.Stack.Stack;
 import java.util.ArrayList;
 
 public final class AlgorithmsData {
-    public final ArrayList<CategoryDetails> Categories = new ArrayList() {{
+    public static final ArrayList<CategoryDetails> Categories = new ArrayList() {{
         add(new CategoryDetails("Sorting", new ArrayList<AlgorithmDetails>() {{
             new AlgorithmDetails("Bubble Sort", BubbleSort.class);
         }}));
