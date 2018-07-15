@@ -34,7 +34,7 @@ public class Queue_sg extends BaseAlgorithm {
     int dialogValue  = -1;
 
     public Queue_sg(int w, int h) {
-        super("Queue", w, h);
+        super(w, h);
     }
 
     @Override

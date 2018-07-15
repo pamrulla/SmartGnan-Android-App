@@ -14,7 +14,6 @@ import static com.smartgnan.helpers.Helper.minValue;
 import static java.lang.Math.abs;
 
 public abstract class BaseAlgorithm {
-    String Title;
     String Info;
     public ArrayList<Options> options;
     public ArrayList<State> States;
@@ -28,8 +27,7 @@ public abstract class BaseAlgorithm {
     protected final int padding = 5;
     final int topPadding = 5;
 
-    public BaseAlgorithm(String title, int w, int h) {
-        Title = title;
+    public BaseAlgorithm(int w, int h) {
         screenWidth = w;
         screenHeight = h;
         halfHeight = h / 2;

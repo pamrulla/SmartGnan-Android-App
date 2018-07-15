@@ -35,7 +35,7 @@ public class Stack extends BaseAlgorithm {
     int dialogValue;
 
     public Stack(int w, int h) {
-        super("Stack", w, h);
+        super(w, h);
 
     }
 

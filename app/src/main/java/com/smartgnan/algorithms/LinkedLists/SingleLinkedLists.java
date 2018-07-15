@@ -53,7 +53,7 @@ public class SingleLinkedLists extends BaseAlgorithm {
     int dialogOption = 100;
 
     public SingleLinkedLists(int w, int h) {
-        super("Single Linked Lists", w, h);
+        super(w, h);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.smartgnan.smartalgo;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.smartgnan.algorithms.LinkedLists.SingleLinkedLists;
 import com.smartgnan.algorithms.Queue.Queue_sg;
 import com.smartgnan.algorithms.Sort.BubbleSort;
 import com.smartgnan.algorithms.Stack.Stack;
+import com.smartgnan.data.AlgorithmsData;
 import com.smartgnan.graphics.SimView;
 import com.smartgnan.helpers.OptionType;
 import com.smartgnan.helpers.Options;
@@ -41,10 +43,19 @@ public class SimActivity extends AppCompatActivity {
     TextView stateText;
     ValueAnimator animator = null;
 
+    int catIndex = 0;
+    int algorithmIndex = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sim);
+
+        Intent intent1 = getIntent();
+        catIndex = intent1.getIntExtra("CatIndex", 0);
+        algorithmIndex = intent1.getIntExtra("AlgorithmsIndex", 0);
+
+        setTitle(AlgorithmsData.Categories.get(catIndex).Algorithms.get(algorithmIndex).Name);
 
         currentIndex = 0;
 
@@ -186,7 +197,8 @@ public class SimActivity extends AppCompatActivity {
     }
 
     public void AfterGotSize(int w, int h) {
-        type = SingleLinkedLists.class;
+        type = AlgorithmsData.Categories.get(catIndex).
+                Algorithms.get(algorithmIndex).AlgorithmClass;
         try {
             try {
                 Constructor cns = type.getConstructor(new Class[] { int.class, int.class});

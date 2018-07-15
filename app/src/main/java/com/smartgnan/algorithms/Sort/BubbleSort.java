@@ -32,7 +32,7 @@ public class BubbleSort extends BaseAlgorithm {
     ArrayList<Integer> dataSet;
 
     public BubbleSort(int w, int h) {
-        super("Bubble Sort", w, h);
+        super(w, h);
     }
 
     @Override

@@ -6,8 +6,8 @@ public class CategoryDetails {
     public String Name;
     public ArrayList<AlgorithmDetails> Algorithms;
 
-    public CategoryDetails(String name, ArrayList<AlgorithmDetails> algorithms) {
+    public CategoryDetails(String name) {
         Name = name;
-        Algorithms = new ArrayList<>(algorithms);
+        Algorithms = new ArrayList<>();
     }
 }
