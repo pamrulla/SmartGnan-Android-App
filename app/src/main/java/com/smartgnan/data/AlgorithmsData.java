@@ -50,6 +50,7 @@ public class AlgorithmsData {
 
         CategoryDetails cat = new CategoryDetails("Sorting");
         cat.Algorithms.add(bubbleSort);
+        cat.Algorithms.add(selectionSort);
 
         Categories.add(cat);
     }
