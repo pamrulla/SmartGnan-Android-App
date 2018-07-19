@@ -45,7 +45,8 @@ public class AlgorithmsData {
     }
 
     private static void UpdateSortingCategory() {
-        AlgorithmDetails bubbleSort = new AlgorithmDetails("Bubble Sort nnnnnnnnnnnnnnnnnnnnnnnn nnnnnnnnn nnnnn", BubbleSort.class, true);
+        AlgorithmDetails bubbleSort = new AlgorithmDetails("Bubble Sort", BubbleSort.class, true);
+        AlgorithmDetails selectionSort = new AlgorithmDetails("Selection Sort", SelectionSort.class, true);
 
         CategoryDetails cat = new CategoryDetails("Sorting");
         cat.Algorithms.add(bubbleSort);
